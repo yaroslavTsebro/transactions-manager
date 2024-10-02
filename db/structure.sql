@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS user (
+  id SERIAL PRIMARY KEY,   
+  fullName VARCHAR(150) NOT NULL,
+  amount NUMERIC(15, 2) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+);
+
+CREATE TYPE IF NOT EXISTS transactionStatus AS ENUM ('PENDING', 'REFUNDED', 'FAILED', 'SUCCESS');
+
+CREATE TABLE IF NOT EXISTS transaction (
+  id SERIAL PRIMARY KEY, 
+  senderId UUID NOT NULL, 
+  recipientId UUID NOT NULL, 
+  amount NUMERIC(15, 2) NOT NULL,
+  status transactionStatus NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_transaction_sender FOREIGN KEY (senderId) REFERENCES user(id)
+  CONSTRAINT fk_transaction_recipient FOREIGN KEY (recipientId) REFERENCES user(id)
+)
