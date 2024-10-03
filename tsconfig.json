@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@packages/*": [
+        "packages/*"
+      ],
+      "@user/*": [
+        "services/user/*"
+      ],
+      "@payment/*": [
+        "services/payment/*"
+      ],
+      "@transaction/*": [
+        "services/transaction/*"
+      ],
+      "@dlq/*": [
+        "services/dlq/*"
+      ]
+    }
+  },
+  "include": [
+    "packages/**/*",
+    "services/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
