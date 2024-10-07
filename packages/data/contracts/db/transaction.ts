@@ -11,6 +11,6 @@ export interface ITransaction extends IEntity {
   id: string;
   senderId: string;
   recipientId: string;
-  amount: BigInt;
+  amount: bigint;
   status: TransactionStatus;
 }
