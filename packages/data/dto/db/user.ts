@@ -5,16 +5,16 @@ export class User extends Entity implements IUser {
   id: string;
   fullName: string;
   email: string;
-  passwordHash: string;
   balance: bigint;
   createdAt: Date;
+  password: string;
   updatedAt: Date;
 
   constructor(
     id: string,
     name: string,
     email: string,
-    passwordHash: string,
+    password: string,
     balance: bigint,
     createdAt: Date,
     updatedAt: Date
@@ -23,7 +23,7 @@ export class User extends Entity implements IUser {
     this.id = id;
     this.fullName = name;
     this.email = email;
-    this.passwordHash = passwordHash;
+    this.password = password;
     this.balance = balance;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

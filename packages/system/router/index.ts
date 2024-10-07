@@ -1,15 +1,23 @@
-import { Handler, Route } from '@packages/data/contracts/router';
+import { Handler, Middleware, Route } from '@packages/data/contracts/router';
 import { IncomingMessage, ServerResponse } from 'http';
 
 export class Router {
   private routes: Route[] = [];
 
-  public register(method: string, path: string, handler: Handler): void {
+  public register(
+    method: string,
+    path: string,
+    handler: Handler,
+    middleware: Middleware[] = []
+  ): void {
     const { regex, keys } = this.pathToRegex(path);
-    this.routes.push({ method, path, handler, regex, keys });
+    this.routes.push({ method, path, handler, middleware, regex, keys });
   }
 
-  public async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  public async handleRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<void> {
     const method = req.method || '';
     const url = req.url || '';
     const parsedUrl = new URL(url, `http://${req.headers.host}`);
@@ -27,6 +35,10 @@ export class Router {
         }
 
         try {
+          for (const mw of route.middleware) {
+            await mw(req, res, params);
+          }
+
           await route.handler(req, res, params);
         } catch (error) {
           this.handleError(res, error);
