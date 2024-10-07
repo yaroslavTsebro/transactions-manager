@@ -1,6 +1,6 @@
 import { ComparisonOperator, ConditionResult, CountResult, ICursor, IDatabase, IDatabaseConfig, IQueryResult, Operator, PatternOperator, ResultMode } from '@packages/data/contracts/system/database';
 import { ILogger } from '@packages/data/contracts/system/logger';
-import { Pool, PoolConfig, QueryResult } from 'pg';
+import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 
 const DefaultLogger: ILogger = {
   error: (objOrMsg: unknown, msg?: string): void => {
@@ -43,18 +43,22 @@ const DefaultLogger: ILogger = {
 
 export class Database implements IDatabase {
   private pool: Pool;
+  private client?: PoolClient;
   public logger: ILogger;
 
-  constructor(config: IDatabaseConfig, logger?: ILogger) {
+  constructor(config: IDatabaseConfig, logger?: ILogger, client?: PoolClient) {
     const poolConfig: PoolConfig = { ...config };
     this.pool = new Pool(poolConfig);
     this.logger = logger || DefaultLogger;
+    this.client = client; // Assign client if provided (for transactions)
   }
 
   async query<T>(text: string, params?: any[]): Promise<IQueryResult<T>> {
     try {
       this.logger.info(`Executing query: ${text} with params: ${JSON.stringify(params)}`);
-      const res: QueryResult<any> = await this.pool.query(text, params);
+      const res: QueryResult<any> = this.client
+        ? await this.client.query(text, params)
+        : await this.pool.query(text, params);
       const result: IQueryResult<T> = {
         rows: res.rows as T[],
         rowCount: res.rowCount,
@@ -132,6 +136,23 @@ export class Database implements IDatabase {
       throw error;
     }
   }
+
+  async transaction<T>(callback: (db: Database) => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const transactionalDb = new Database({}, this.logger, client);
+      const result = await callback(transactionalDb);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      this.logger.error(error, 'Transaction rolled back due to error:');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export class Cursor<T> implements ICursor<T> {
@@ -145,6 +166,7 @@ export class Cursor<T> implements ICursor<T> {
   private args: any[] = [];
   private db: Database;
   private logger: ILogger;
+  private lockMode: string | null = null;
 
   constructor(table: string, db: Database, logger?: ILogger) {
     this.table = table;
@@ -154,6 +176,11 @@ export class Cursor<T> implements ICursor<T> {
 
   fields(fields: (keyof T)[]): ICursor<T> {
     this.columns = fields as string[];
+    return this;
+  }
+
+  forUpdate(): ICursor<T> {
+    this.lockMode = 'FOR UPDATE';
     return this;
   }
 
@@ -268,6 +295,10 @@ export class Cursor<T> implements ICursor<T> {
 
     if (this.orderColumns.length > 0) {
       query += ` ORDER BY ${this.orderColumns.join(', ')}`;
+    }
+
+    if (this.lockMode) {
+      query += ` ${this.lockMode}`;
     }
 
     try {

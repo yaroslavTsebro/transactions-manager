@@ -1,7 +1,7 @@
-import { AuthorizationError } from '@packages/data/contracts/errors/authorization-error';
-import { TokenMissingError } from '@packages/data/contracts/errors/token-missing-error';
+import { AuthorizationError } from '@packages/data/contracts/errors/user/authorization-error';
+import { TokenMissingError } from '@packages/data/contracts/errors/user/token-missing-error';
 import { IncomingMessage, ServerResponse } from 'http';
-import { InvalidTokenError } from '@packages/data/contracts/errors/invalid-token-error';
+import { InvalidTokenError } from '@packages/data/contracts/errors/user/invalid-token-error';
 import { JwtService } from '../services/jwt';
 
 export interface AuthenticatedRequest extends IncomingMessage {

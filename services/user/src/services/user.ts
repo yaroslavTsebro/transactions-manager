@@ -1,9 +1,9 @@
 import { IUser } from '@packages/data/contracts/db/user';
-import { InsufficientFundsError } from '@packages/data/contracts/errors/insufficient-funds-error';
-import { InvalidCredentialsError } from '@packages/data/contracts/errors/invalid-credentials-error';
-import { RecipientNotFoundError } from '@packages/data/contracts/errors/recipient-not-found-error';
-import { UserAlreadyExistsError } from '@packages/data/contracts/errors/user-already-exists-error';
-import { UserNotFoundError } from '@packages/data/contracts/errors/user-not-found-error';
+import { InsufficientFundsError } from '@packages/data/contracts/errors/user/insufficient-funds-error';
+import { InvalidCredentialsError } from '@packages/data/contracts/errors/user/invalid-credentials-error';
+import { RecipientNotFoundError } from '@packages/data/contracts/errors/user/recipient-not-found-error';
+import { UserAlreadyExistsError } from '@packages/data/contracts/errors/user/user-already-exists-error';
+import { UserNotFoundError } from '@packages/data/contracts/errors/user/user-not-found-error';
 import { UserRepository } from '../repositories/user';
 import { messageQueue } from '../utils/message-queue';
 import { Hasher } from './hasher';
