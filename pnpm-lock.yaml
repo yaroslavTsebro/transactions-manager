@@ -37,6 +37,16 @@ importers:
         specifier: ^5.6.2
         version: 5.6.2
 
+  services/dql:
+    dependencies:
+      amqplib:
+        specifier: ^0.10.4
+        version: 0.10.4
+    devDependencies:
+      '@types/amqplib':
+        specifier: ^0.10.5
+        version: 0.10.5
+
   services/transaction:
     dependencies:
       amqplib:
