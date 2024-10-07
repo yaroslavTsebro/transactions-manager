@@ -1,6 +1,6 @@
 import { AuthorizationError } from '@packages/data/contracts/errors/authorization-error';
 import { TokenMissingError } from '@packages/data/contracts/errors/token-missing-error';
-import { IncomingMessage } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { InvalidTokenError } from '@packages/data/contracts/errors/invalid-token-error';
 import { JwtService } from '../services/jwt';
 
@@ -10,7 +10,11 @@ export interface AuthenticatedRequest extends IncomingMessage {
 }
 
 export const authMiddleware = (tokenService: JwtService) => {
-  return (req: AuthenticatedRequest): void => {
+  return async (
+    req: AuthenticatedRequest,
+    res: ServerResponse,
+    params?: Record<string, string>
+  ): Promise<void> => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
       throw new AuthorizationError('Authorization header missing.');
