@@ -3,6 +3,7 @@ import { IEntity } from './entity';
 export interface IUser extends IEntity {
   id: string;
   fullName: string;
-  balance: BigInt;
+  balance: bigint;
+  password: string;
   email: string;
 }
