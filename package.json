@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dotenv": "^16.4.5",
     "pg": "^8.13.0",
     "pino": "^9.4.0",
     "pino-multi-stream": "^6.0.0"
