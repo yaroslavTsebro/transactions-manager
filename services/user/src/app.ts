@@ -1,5 +1,9 @@
+import { config } from 'dotenv';
 import { Server } from './server';
 import { logger } from './utils/logger';
+
+const env = process.env.NODE_ENV || 'development';
+config({ path: `.env.${env}` });
 
 const server = new Server();
 
