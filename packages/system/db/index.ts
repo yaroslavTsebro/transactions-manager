@@ -53,6 +53,10 @@ export class Database implements IDatabase {
     this.client = client; // Assign client if provided (for transactions)
   }
 
+  async close(){
+    this.pool = {} as Pool;
+  }
+
   async query<T>(text: string, params?: any[]): Promise<IQueryResult<T>> {
     try {
       this.logger.info(`Executing query: ${text} with params: ${JSON.stringify(params)}`);
